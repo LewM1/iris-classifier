@@ -62,7 +62,7 @@ def main():
 
     # Save trained model
     
-    model_path = os.path.join(output_dir, "decision_tree_model.pkl")
+    model_path = os.path.join(output_dir, "decision_tree_model.joblib")
     joblib.dump(model, model_path)
 
     print(f"Saved trained model to: {model_path}")
