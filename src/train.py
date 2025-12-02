@@ -6,50 +6,66 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 
-# --- Create outputs folder ---
-output_dir = "outputs"
-os.makedirs(output_dir, exist_ok=True)
 
-# --- Load data ---
-iris = load_iris()
-X = iris.data
-y = iris.target
-print(iris.feature_names, iris.target_names)
+def main():
+    
+    # Locate the project root (one level above this script's folder)
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
 
-# --- Train/Test split ---
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+    # Create/use outputs folder outside src/
+    
+    output_dir = os.path.join(project_root, "outputs")
+    os.makedirs(output_dir, exist_ok=True)
 
-# --- Train model ---
-model = DecisionTreeClassifier(random_state=42)
-model.fit(X_train, y_train)
+    # Load data
+    
+    iris = load_iris()
+    X = iris.data
+    y = iris.target
 
-# --- Predictions ---
-y_pred = model.predict(X_test)
-print("Predictions:", y_pred[:5])
-print("True labels:", y_test[:5])
+    # Split data
+    
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
-# --- Accuracy ---
-accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy:", accuracy)
+    # Train model
+    
+    model = DecisionTreeClassifier(random_state=42)
+    model.fit(X_train, y_train)
 
-# --- Confusion Matrix ---
-cm = confusion_matrix(y_test, y_pred)
-print('Confusion Matrix:')
-print(cm)
+    # Predictions & accuracy
+    
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"Accuracy: {accuracy:.4f}")
 
-# --- Save confusion matrix as PNG ---
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=iris.target_names)
-disp.plot(cmap="Blues")
-plt.title("Confusion Matrix")
-plt.savefig(os.path.join(output_dir, "confusion_matrix.png"), dpi=300)
-plt.close()
+    # Confusion Matrix
+    
+    cm = confusion_matrix(y_test, y_pred)
+    print("Confusion Matrix:")
+    print(cm)
 
-print("Saved confusion_matrix.png")
+    # Save confusion matrix plot
+    
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=iris.target_names)
+    disp.plot(cmap="Blues")
+    plt.title("Confusion Matrix")
 
-# --- Save trained model ---
-model_path = os.path.join(output_dir, "decision_tree_model.pkl")
-joblib.dump(model, model_path)
+    cm_path = os.path.join(output_dir, "confusion_matrix.png")
+    plt.savefig(cm_path, dpi=300)
+    plt.close()
 
-print("Saved model to:", model_path)
+    print(f"Saved confusion matrix figure to: {cm_path}")
+
+    # Save trained model
+    
+    model_path = os.path.join(output_dir, "decision_tree_model.pkl")
+    joblib.dump(model, model_path)
+
+    print(f"Saved trained model to: {model_path}")
+
+if __name__ == "__main__":
+    main()
